@@ -1,5 +1,5 @@
 var cluster = require('cluster');
-var config = require("config.js");
+var config = require("./config.js");
 if (cluster.isMaster) {
     //fork dis shit
     var cpuCount = require('os').cpus().length;
@@ -18,15 +18,16 @@ if (cluster.isMaster) {
     }
     function randomString(length) {
         var buildStr = "";
-        for (i = 0; i == length; i++) {
+        for (i = 0; i < length; i++) {
             buildStr += config.rngStringChars[randomInt(0, config.rngStringChars.length - 1)];
         }
         return buildStr;
     }
     var express = require('express');
     var fileUpload = require('express-fileupload');
+    var mime = require("mime");
     var mysql = require("mysql");
-    var sqlconnection = mysql.connect({
+    var sqlconnection = mysql.createConnection({
         host: config.mysql_host,
         user: config.mysql_user,
         database: config.mysql_database,
@@ -35,22 +36,44 @@ if (cluster.isMaster) {
     var app = express();
     app.use(fileUpload());
     app.post('/upload', function (req, res) {
+        if (req.files.fileUpload == undefined) {
+            return undefined;
+        }
         console.log(req);
         if (!req.files) {
-            res.write("No File Upload");
+            res.write(JSON.stringify({
+                "err": "NO_FILE_PROVIDED"
+            }));
             return undefined;
         }
         console.log(req.files);
         if (config.filterMime) {
-            if (config.filterMime.indexOf(req.files.uploadFile.mimetype) == -1) {
+            if (config.filterMime.indexOf(req.files.fileUpload.mimetype) == -1) {
                 return undefined;
             }
         }
-        req.files.uploadFile.mv(config.filePath + req.files.uploadFile.name);
-        sqlconnection.query("INSERT INTO " + mysql.escape(config.mysql_table) + " (filename, onlinepath, localpath, mime) VALUES (" +
-            mysql.escape(req.files.uploadFile.name) + ", " +
-                mysql.escape()
-        )
+        // generate new filename
+        var newFilename = randomString(20) + "." + mime.extension(req.files.fileUpload.mimetype);
+        // limit upload filename to 265 chars
+        if (req.files.fileUpload.name.length >= 256) {
+            req.files.fileUpload.name.length = req.files.fileUpload.name.length.substr(0, 255);
+        }
+        // move file from cache to local Webserver file location
+        req.files.fileUpload.mv(newFilename, function (err) {
+            console.log("Err: " + err);
+        });
+        var sql = "INSERT INTO " + config.mysql_table + " (filename, orgfilename, activecdn, mime) VALUES (" +
+            mysql.escape(newFilename) + ", " +
+            mysql.escape(req.files.fileUpload.name) + ", " +
+            mysql.escape(config.webservClusterDomainName) + ", " +
+            mysql.escape(req.files.fileUpload.mimetype) + ");";
+        console.log(sql);
+        sqlconnection.query(sql);
+        res.end(JSON.stringify({
+            "cdnFilename": newFilename,
+            "mimetype": req.files.fileUpload.mimetype,
+            "activeCDN": config.webservClusterDomainName
+        }));
     });
 
     // Bind to a port

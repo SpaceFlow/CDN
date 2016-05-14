@@ -1,10 +1,11 @@
 module.exports = {
     tmpPath: "tmp/",
     uploadDir: "files/",
+    webservDataDir: "files", // no trailing slash
     rngStringLength: 5,
-    rngStringChars: "",
+    rngStringChars: "abcdefghijklmnopqrstuvwxyz1234567890",
     homeDir: __dirname,
-    webservClusterDomainName: "",
+    webservClusterDomainName: "mun-ger",
     filterMime: false,
     acceptMimes: [
         "image/png",
@@ -17,6 +18,6 @@ module.exports = {
     mysql_database: "sf",
     mysql_table: "cdn",
     mysql_host: "localhost",
-    mysql_user: "sf",
+    mysql_user: "root",
     mysql_password: ""
 };
