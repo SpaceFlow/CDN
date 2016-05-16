@@ -36,6 +36,11 @@ if (cluster.isMaster) {
     });
     var app = express();
     app.use(fileUpload());
+    app.get("/upload", function(req, res) {
+        res.end(JSON.stringify({
+            "error": "no get service"
+        }))
+    });
     app.post('/upload', function (req, res) {
         if (req.files.fileUpload == undefined) {
             return undefined;
