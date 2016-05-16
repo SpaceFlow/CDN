@@ -1,0 +1,13 @@
+{
+  "name": "Spaceflow CDN",
+  "description": "Spaceflow Content Delivery Network",
+  "author": "Kirschn",
+  "dependencies": {
+    "express": "*",
+    "mysql": "*",
+    "cluster": "*",
+    "express-fileupload": "*",
+    "md5-file": "*",
+    "mime": "*"
+  }
+}

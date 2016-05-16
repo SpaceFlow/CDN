@@ -44,7 +44,9 @@ if (cluster.isMaster) {
                    if (result[0] !== undefined) {
                        if (result[0].activeCDN.indexOf(config.webservClusterDomainName) !== -1) {
                            res.download(config.webservDataDir + "/" + result[0].filename, result[0].orgfilename);
+                           console.log("Sending local file...");
                        } else {
+                           console.log("Downloading remote file...");
                             var downloadCDN = "";
                             if (results[0].activecdn.indexOf(",") !== -1) {
                                 downloadCDN = results[0].activeCDN;
@@ -55,6 +57,7 @@ if (cluster.isMaster) {
                            req.path, function(err) {
                                sqlConnection.query("UPDATE " + config.mysql_table + " SET activecdn = CONCAT(activecdn, ',"  +
                                    config.webservClusterDomainName + "') WHERE id=" + mysql.escape(results[0].id) + ";");
+                               res.download(config.webservDataDir + "/" + result[0].filename, result[0].orgfilename);
                            })
                        }
                    }
@@ -65,7 +68,7 @@ if (cluster.isMaster) {
     });
 
     // Bind to a port
-    app.listen(3000);
+    app.listen(config.webServerPort);
     console.log('Worker %d running!', cluster.worker.id);
 
 }

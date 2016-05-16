@@ -27,6 +27,7 @@ if (cluster.isMaster) {
     var fileUpload = require('express-fileupload');
     var mime = require("mime");
     var mysql = require("mysql");
+    var md5File = require("md5-file");
     var sqlconnection = mysql.createConnection({
         host: config.mysql_host,
         user: config.mysql_user,
@@ -59,13 +60,14 @@ if (cluster.isMaster) {
             req.files.fileUpload.name.length = req.files.fileUpload.name.length.substr(0, 255);
         }
         // move file from cache to local Webserver file location
-        req.files.fileUpload.mv(newFilename, function (err) {
+        req.files.fileUpload.mv(config.uploadDir + newFilename, function (err) {
             console.log("Err: " + err);
         });
-        var sql = "INSERT INTO " + config.mysql_table + " (filename, orgfilename, activecdn, mime) VALUES (" +
+        var sql = "INSERT INTO " + config.mysql_table + " (filename, orgfilename, activecdn, hashmd5, mime) VALUES (" +
             mysql.escape(newFilename) + ", " +
             mysql.escape(req.files.fileUpload.name) + ", " +
             mysql.escape(config.webservClusterDomainName) + ", " +
+            mysql.escape(md5File(newFilename)) + ", " +
             mysql.escape(req.files.fileUpload.mimetype) + ");";
         console.log(sql);
         sqlconnection.query(sql);
@@ -77,7 +79,7 @@ if (cluster.isMaster) {
     });
 
     // Bind to a port
-    app.listen(3000);
+    app.listen(config.uploadServerPort);
     console.log('Worker %d running!', cluster.worker.id);
 
 }
