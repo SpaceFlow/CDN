@@ -57,8 +57,12 @@ if (cluster.isMaster) {
         }))
     });
     app.post('/upload', function (req, res) {
-        res.header('Access-Control-Allow-Origin', 'http://sharepic.moe');
+        
         if (req.files.fileUpload == undefined) {
+            res.write(JSON.stringify({
+                "err": "NO_FILE_PROVIDED"
+            }));
+            res.end();
             return undefined;
         }
         console.log(req);
@@ -66,11 +70,16 @@ if (cluster.isMaster) {
             res.write(JSON.stringify({
                 "err": "NO_FILE_PROVIDED"
             }));
+            res.end();
             return undefined;
         }
         console.log(req.files);
         if (config.filterMime) {
             if (config.filterMime.indexOf(req.files.fileUpload.mimetype) == -1) {
+                res.write(JSON.stringify({
+                "err": "INVALID_FORMAT"
+            }));
+            res.end();
                 return undefined;
             }
         }
