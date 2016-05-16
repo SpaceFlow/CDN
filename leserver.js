@@ -42,7 +42,7 @@ if (cluster.isMaster) {
         }))
     });
     app.post('/upload', function (req, res) {
-        res.writeHead(200, {"Access-Control-Allow-Origin": "*"});
+        res.header('Access-Control-Allow-Origin', 'http://sharepic.moe');
         if (req.files.fileUpload == undefined) {
             return undefined;
         }
