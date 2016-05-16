@@ -36,7 +36,7 @@ if (cluster.isMaster) {
             if (cb) cb(err.message);
         });
     };
-    app.get("/", function (req, res) {
+    app.get("*", function (req, res) {
        if (req.path !== "/") {
            sqlConnection.query("SELECT id, activecdn, mime, orgfilename FROM " + config.mysql_table +" WHERE filename=" +
            mysql.escape(req.path.substr(1)) +";", function (err, result) {
