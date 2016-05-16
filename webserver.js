@@ -43,7 +43,12 @@ if (cluster.isMaster) {
                if (!err) {
                    if (result[0] !== undefined) {
                        if (result[0].activecdn.indexOf(config.webservClusterDomainName) !== -1) {
-                           res.download(config.webservDataDir + "/" + result[0].filename, result[0].orgfilename);
+                           res.set({
+                               "Content-Disposition": "inline",
+                               "filename": result[0].orgfilename
+                           });
+                           res.send(fs.readFileSync(config.webservDataDir + "/" + result[0].filename));
+                           res.end();
                            console.log("Sending local file...");
                        } else {
                            console.log("Downloading remote file...");
