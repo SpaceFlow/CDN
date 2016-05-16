@@ -61,6 +61,9 @@ if (cluster.isMaster) {
                                res.download(config.webservDataDir + "/" + result[0].filename, result[0].orgfilename);
                            })
                        }
+                   } else {
+                       res.writeHead(404, {'Location': "404.jpeg"});
+                       res.end("404 Not Found");
                    }
                }
            });
