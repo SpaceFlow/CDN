@@ -72,7 +72,7 @@ if (cluster.isMaster) {
             mysql.escape(newFilename) + ", " +
             mysql.escape(req.files.fileUpload.name) + ", " +
             mysql.escape(config.webservClusterDomainName) + ", " +
-            mysql.escape(md5File(newFilename)) + ", " +
+            mysql.escape(md5File(config.uploadDir + newFilename)) + ", " +
             mysql.escape(req.files.fileUpload.mimetype) + ");";
         console.log(sql);
         sqlconnection.query(sql);
