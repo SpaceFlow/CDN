@@ -42,16 +42,16 @@ if (cluster.isMaster) {
            mysql.escape(req.path.substr(1)) +";", function (err, result) {
                if (!err) {
                    if (result[0] !== undefined) {
-                       if (result[0].activeCDN.indexOf(config.webservClusterDomainName) !== -1) {
+                       if (result[0].activecdn.indexOf(config.webservClusterDomainName) !== -1) {
                            res.download(config.webservDataDir + "/" + result[0].filename, result[0].orgfilename);
                            console.log("Sending local file...");
                        } else {
                            console.log("Downloading remote file...");
                             var downloadCDN = "";
                             if (results[0].activecdn.indexOf(",") !== -1) {
-                                downloadCDN = results[0].activeCDN;
+                                downloadCDN = results[0].activecdn;
                             } else {
-                                downloadCDN = results[0].activeCDN.split(",")[0];
+                                downloadCDN = results[0].activecdn.split(",")[0];
                             }
                            download("http://" + downloadCDN + ".cdn.spaceflow.io" + req.path, config.webservDataDir +
                            req.path, function(err) {
