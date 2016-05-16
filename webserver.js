@@ -44,7 +44,6 @@ if (cluster.isMaster) {
                    if (result[0] !== undefined) {
                        if (result[0].activecdn.indexOf(config.webservClusterDomainName) !== -1) {
                            res.set({
-                               "Content-Disposition": "inline",
                                "filename": result[0].orgfilename
                            });
                            res.send(fs.readFileSync(config.webservDataDir + "/" + result[0].filename));
