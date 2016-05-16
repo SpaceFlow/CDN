@@ -43,11 +43,8 @@ if (cluster.isMaster) {
                if (!err) {
                    if (result[0] !== undefined) {
                        if (result[0].activecdn.indexOf(config.webservClusterDomainName) !== -1) {
-                           res.set({
-                               "filename": result[0].orgfilename
-                           });
-                           res.send(fs.readFileSync(config.webservDataDir + "/" + result[0].filename));
-                           res.end();
+                           res.writeHead(200, {'Content-Type': result[0].mime});
+                           res.end(fs.readFileSync(config.webservDataDir + "/" + result[0].filename), 'binary');
                            console.log("Sending local file...");
                        } else {
                            console.log("Downloading remote file...");
