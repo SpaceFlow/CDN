@@ -42,6 +42,7 @@ if (cluster.isMaster) {
         }))
     });
     app.post('/upload', function (req, res) {
+        res.writeHead(200, {"Access-Control-Allow-Origin": "*"});
         if (req.files.fileUpload == undefined) {
             return undefined;
         }
