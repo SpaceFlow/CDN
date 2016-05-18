@@ -68,6 +68,9 @@ if (cluster.isMaster) {
                }
            });
            
+       } else {
+           res.writeHead(404, {'Location': "404.jpeg"});
+                       res.end();
        }
     });
 
