@@ -38,18 +38,17 @@ if (cluster.isMaster) {
     };
     app.get("*", function (req, res) {
        if (req.path !== "/") {
-           sqlConnection.query("SELECT id, activecdn, mime, orgfilename, filename FROM " + config.mysql_table +" WHERE filename=" +
-           mysql.escape(req.path.substr(1)) +";", function (err, result) {
+           sqlConnection.query("SELECT id, activecdn, mime, orgfilename, filename FROM ? WHERE filename = ?", [config.mysql_table, req.path.substr(1)] , function (err, results, fields) {
                if (!err) {
-                   if (result[0] !== undefined) {
-                       if (result[0].activecdn.indexOf(config.webservClusterDomainName) !== -1) {
-                           res.writeHead(200, {'Content-Type': result[0].mime});
-                           res.end(fs.readFileSync(config.webservDataDir + "/" + result[0].filename), 'binary');
+                   if (results[0] !== undefined) {
+                       if (results[0].activecdn.indexOf(config.webservClusterDomainName) !== -1) {
+                           res.writeHead(200, {'Content-Type': results[0].mime});
+                           res.end(fs.readFileSync(config.webservDataDir + "/" + results[0].filename), 'binary');
                            console.log("Sending local file...");
                        } else {
                            console.log("Downloading remote file...");
                             var downloadCDN = "";
-                            if (results[0].activecdn.indexOf(",") !== -1) {
+                            if (results[0].activecdn.indexOf(",") !== -1) { //War das so gewollt?
                                 downloadCDN = results[0].activecdn;
                             } else {
                                 downloadCDN = results[0].activecdn.split(",")[0];
@@ -58,7 +57,7 @@ if (cluster.isMaster) {
                            req.path, function(err) {
                                sqlConnection.query("UPDATE " + config.mysql_table + " SET activecdn = CONCAT(activecdn, ',"  +
                                    config.webservClusterDomainName + "') WHERE id=" + mysql.escape(results[0].id) + ";");
-                               res.download(config.webservDataDir + "/" + result[0].filename, result[0].orgfilename);
+                               res.download(config.webservDataDir + "/" + results[0].filename, results[0].orgfilename);
                            })
                        }
                    } else {
