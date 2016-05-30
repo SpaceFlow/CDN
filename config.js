@@ -4,8 +4,8 @@ module.exports = {
     tmpPath: "tmp/",
     uploadDir: "files/",
     webservDataDir: "files", // no trailing slash
-    rngStringLength: 5,
-    rngStringChars: "abcdefghijklmnopqrstuvwxyz1234567890",
+    rngStringLength: 10,
+    rngStringChars: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_", //Think huge guys, BASE64, 1152921504606846976 possibilities
     homeDir: __dirname,
     webservClusterDomainName: "mun-ger",
     filterMime: false,

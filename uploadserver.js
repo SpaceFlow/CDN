@@ -16,12 +16,21 @@ if (cluster.isMaster) {
     function randomInt (low, high) {
         return Math.floor(Math.random() * (high - low) + low);
     }
-    function randomString(length) {
+    function randomString() {
         var buildStr = "";
-        for (i = 0; i < length; i++) {
+        for (i = 0; i < config.rngStringLength; i++) { //Due to the fact, that we already have a config var, lets use it
             buildStr += config.rngStringChars[randomInt(0, config.rngStringChars.length - 1)];
         }
-        return buildStr;
+        sqlConnection.query("SELECT id FROM ? WHERE filename LIKE ?", [config.mysql_table, buildStr] , function (err, results, fields) { //Although it is more likely, to win the lottery jackpot TWO times in a ROW, but hey: We must bear that in mind ^^
+            if(!err){
+                if(results.length != 1){
+                    return buildStr;
+                }else{
+                    return randomString()
+                }
+            }
+        })
+        
     }
     var express = require('express');
     var fileUpload = require('express-fileupload');
@@ -84,9 +93,9 @@ if (cluster.isMaster) {
             }
         }
         // generate new filename
-        var newFilename = randomString(20) + "." + mime.extension(req.files.fileUpload.mimetype);
-        // limit upload filename to 265 chars
-        if (req.files.fileUpload.name.length >= 256) {
+        var newFilename = randomString() + "." + mime.extension(req.files.fileUpload.mimetype);
+        // limit upload filename to 255 chars
+        if (req.files.fileUpload.name.length >= 255) { //That will NEVER happen, since the max file name length is 255 for Linux/ext4 and Windows/NTFS
             req.files.fileUpload.name.length = req.files.fileUpload.name.length.substr(0, 255);
         }
         // move file from cache to local Webserver file location
