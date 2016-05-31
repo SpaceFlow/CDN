@@ -17,9 +17,9 @@ module.exports = {
         "image/tiff",
         "image/x-icon"
     ],
-    mysql_database: "sf",
+    mysql_database: "cdn",
     mysql_table: "cdn",
-    mysql_host: "localhost",
+    mysql_host: "127.0.0.1",
     mysql_user: "root",
     mysql_password: ""
 };
