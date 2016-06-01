@@ -1,6 +1,5 @@
 module.exports = {
-    webServerPort: 3000,
-    uploadServerPort: 3005,
+    webServerPort: 1000,
     tmpPath: "tmp/",
     uploadDir: "files/",
     webservDataDir: "files", // no trailing slash
